@@ -1,6 +1,7 @@
 import time
 import requests
 import json
+from pypresence import ActivityType
 from pypresence.exceptions import PipeClosed
 from datetime import datetime, timedelta
 
@@ -197,6 +198,7 @@ def update_rpc(info, start_time, end_time, image_url, imdb_url, tmdb_url, trakt_
     buttons = create_buttons(imdb_url, letterboxd_url, tmdb_url, trakt_url)
 
     rpc_params = {
+        "activity_type": ActivityType.WATCHING,
         "details": str(info['label']) if media_type == 'channel' else (str(info['title']) + ' (' + str(info['year']) + ')' if media_type == 'movie' else str(info['showtitle']) if media_type == 'episode' else str(info['title'])),
         "state": str(info['title']) if (media_type == 'channel' and info['title']) else ("Playing" if is_playing else "Paused"),
         "large_image": image_url,
