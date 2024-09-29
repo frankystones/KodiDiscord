@@ -14,7 +14,7 @@ def update_and_sleep(info, length, last_info, last_length, last_time):
     if should_update_rp(info, length, last_info, last_length, last_time):
         update_rp(info, length)
         last_info, last_length, last_time = info, length, length['result']['time']
-    time.sleep(3)
+    time.sleep(10)
     return last_info, last_length, last_time
 
 def main():
@@ -24,7 +24,7 @@ def main():
             while True:
                 info, length = get_session_info(session)
                 if None in (info, length):
-                    time.sleep(3)
+                    time.sleep(10)
                     continue
                 last_info, last_length, last_time = update_and_sleep(info, length, last_info, last_length, last_time)
     except KeyboardInterrupt:
