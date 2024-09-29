@@ -38,12 +38,36 @@ def get_tmdb_id_tmdb(info, media_type):
 
 def get_tmdb_id_for_tv_show(info):
     tv_show_id = info.get('tvshowid', -1)
-    return get_tmdb_id_from_tv_show_details(tv_show_id) if tv_show_id != -1 else None
+    show_title = info.get('showtitle')  # Get show title from info
+
+    # If tv_show_id is -1, search for the TMDb ID using show_title
+    if tv_show_id == -1 and show_title:
+        return search_tmdb_by_title(show_title)
+    
+    # If tv_show_id is valid, get TMDb ID from the details
+    return get_tmdb_id_from_tv_show_details(tv_show_id)
 
 def make_api_request(url):
     response = requests.get(url).json()
     logger.debug(f"API Response: {response}")
     return response
+
+def search_tmdb_by_title(show_title):
+    search_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={show_title}"
+    response = make_api_request(search_url)
+
+    # Log the search response
+    logger.debug(f"Search Response for title '{show_title}': {response}")
+
+    if response.get('results'):
+        # Assuming you want the first result
+        show_info = response['results'][0]
+        tmdb_id = show_info.get('id')
+        logger.debug(f"Found TMDb ID for title '{show_title}': {tmdb_id}")
+        return tmdb_id
+    
+    logger.debug(f"No results found for title '{show_title}'")
+    return None
 
 def get_tmdb_id_from_tv_show_details(tv_show_id):
     tv_show_url = f"http://localhost:{port}/jsonrpc?request={{%22jsonrpc%22:%222.0%22,%22method%22:%22VideoLibrary.GetTVShowDetails%22,%22params%22:{{%22tvshowid%22:{tv_show_id},%22properties%22:[%22uniqueid%22]}},%22id%22:%22libTvShow%22}}"

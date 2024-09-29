@@ -203,8 +203,8 @@ def update_rpc(info, start_time, end_time, image_url, imdb_url, tmdb_url, trakt_
         "state": str(info['title']) if (media_type == 'channel' and info['title']) else ("Playing" if is_playing else "Paused"),
         "large_image": image_url,
         "large_text": large_text_map.get(media_type.lower(), "Default Large Text"),
-        "small_image": 'play' if is_playing else 'pause',
-        "small_text": 'Playing' if is_playing else 'Paused'
+        #"small_image": 'play' if is_playing else 'pause',
+        #"small_text": 'Playing' if is_playing else 'Paused'
     }
 
     if buttons:
