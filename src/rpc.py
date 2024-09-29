@@ -197,12 +197,20 @@ def update_rpc(info, start_time, end_time, image_url, imdb_url, tmdb_url, trakt_
 
     buttons = create_buttons(imdb_url, letterboxd_url, tmdb_url, trakt_url)
 
+    # Define large text based on media type
+    if media_type == 'episode' and 'season' in info and 'episode' in info:
+        season_number = str(info['season']).zfill(2)
+        episode_number = str(info['episode']).zfill(2)
+        large_text = f"Season {season_number}, Episode {episode_number}"
+    else:
+        large_text = large_text_map.get(media_type.lower(), "Default Large Text")
+
     rpc_params = {
         "activity_type": ActivityType.WATCHING,
         "details": str(info['label']) if media_type == 'channel' else (str(info['title']) + ' (' + str(info['year']) + ')' if media_type == 'movie' else str(info['showtitle']) if media_type == 'episode' else str(info['title'])),
         "state": str(info['title']) if (media_type == 'channel' and info['title']) else ("Playing" if is_playing else "Paused"),
         "large_image": image_url,
-        "large_text": large_text_map.get(media_type.lower(), "Default Large Text"),
+        "large_text": large_text,
         #"small_image": 'play' if is_playing else 'pause',
         #"small_text": 'Playing' if is_playing else 'Paused'
     }
@@ -215,12 +223,7 @@ def update_rpc(info, start_time, end_time, image_url, imdb_url, tmdb_url, trakt_
         rpc_params["end"] = end_time
 
     if media_type == 'episode':
-        if 'season' in info and info['season'] and 'episode' in info and info['episode']:
-            season_number = str(info['season']).zfill(2)
-            episode_number = str(info['episode']).zfill(2)
-            rpc_params["state"] = f'S{season_number}E{episode_number}: {info["title"]}'
-        else:
-            rpc_params["state"] = info["title"]
+        rpc_params["state"] = info["title"]
 
     if media_type == 'movie' and is_playing:
         if DIRECTOR_ENABLED and 'director' in info and info['director'] is not None and GENRES_ENABLED is False:
@@ -229,8 +232,11 @@ def update_rpc(info, start_time, end_time, image_url, imdb_url, tmdb_url, trakt_
         if GENRES_ENABLED and 'genre' in info and info['genre'] is not None and DIRECTOR_ENABLED is False:
             genres = ', '.join(info['genre'])
             rpc_params["state"] = f"{genres}"
+        else:
+            rpc_params["state"] = info["title"]
 
     RPC.update(**rpc_params)
+
     
 """
 Start and end time calculations, button creation, URL fetching

@@ -39,7 +39,9 @@ def get_imdb_id_from_tv_show_details(tv_show_id):
     return tv_show_response.get('result', {}).get('tvshowdetails', {}).get('uniqueid', {}).get('imdb', None)
 
 def get_imdb_id_for_movie(info):
-    return info['uniqueid']['imdb']
+    if 'uniqueid' in info and 'imdb' in info['uniqueid']:
+        return info['uniqueid']['imdb']
+    return None
 
 def get_imdb_url(imdb_id):
     url = f"https://www.imdb.com/title/{imdb_id}/" if imdb_id else None

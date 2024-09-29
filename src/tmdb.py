@@ -42,7 +42,7 @@ def get_tmdb_id_for_tv_show(info):
 
     # If tv_show_id is -1, search for the TMDb ID using show_title
     if tv_show_id == -1 and show_title:
-        return search_tmdb_by_title(show_title)
+        return search_tmdb_by_showtitle(show_title)
     
     # If tv_show_id is valid, get TMDb ID from the details
     return get_tmdb_id_from_tv_show_details(tv_show_id)
@@ -52,7 +52,7 @@ def make_api_request(url):
     logger.debug(f"API Response: {response}")
     return response
 
-def search_tmdb_by_title(show_title):
+def search_tmdb_by_showtitle(show_title):
     search_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={show_title}"
     response = make_api_request(search_url)
 
@@ -75,7 +75,36 @@ def get_tmdb_id_from_tv_show_details(tv_show_id):
     return response.get('result', {}).get('tvshowdetails', {}).get('uniqueid', {}).get('tmdb')
 
 def get_tmdb_id_for_media(info):
-    return info.get('uniqueid', {}).get('tmdb')
+    # Try to get the TMDb ID from the uniqueid field
+    tmdb_id = info.get('uniqueid', {}).get('tmdb')
+
+    # If TMDb ID is not found, extract the title and search TMDb
+    if not tmdb_id:
+        title = info.get('title')  # Extract the title from info
+        if title:
+            logger.debug(f"TMDb ID not found for media. Searching TMDb using title: {title}")
+            tmdb_id = search_tmdb_by_movietitle(title)
+        else:
+            logger.debug("No title found to search TMDb.")
+    
+    return tmdb_id
+
+def search_tmdb_by_movietitle(title):
+    search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={title}"
+    response = make_api_request(search_url)
+
+    # Log the search response
+    logger.debug(f"Search Response for title '{title}': {response}")
+
+    if response.get('results'):
+        # Assuming you want the first result
+        show_info = response['results'][0]
+        tmdb_id = show_info.get('id')
+        logger.debug(f"Found TMDb ID for title '{title}': {tmdb_id}")
+        return tmdb_id
+    
+    logger.debug(f"No results found for title '{title}'")
+    return None
 
 def get_image_url(tmdb_id, media_type):
     return get_image_url_from_tmdb(tmdb_id, media_type) if tmdb_id else DEFAULT_POSTER_URL
