@@ -11,7 +11,8 @@ from config import (
     TRAKT_BUTTON_ENABLED, 
     LETTERBOXD_BUTTON_ENABLED, 
     TIME_REMAINING_RPC_ENABLED, 
-    TMDB_THUMBNAIL_ENABLED, 
+    TMDB_THUMBNAIL_ENABLED,
+    KODI_THUMBNAIL_ENABLED, 
     DIRECTOR_ENABLED, 
     GENRES_ENABLED, 
     LIVETV_LARGE_TEXT, 
@@ -31,6 +32,7 @@ from .imdb import get_imdb_id, get_imdb_url
 from .tmdb import get_tmdb_id_tmdb, get_media_type, get_image_url, get_tmdb_url
 from .trakt import get_trakt_url, get_tmdb_id_trakt
 from .letterboxd import get_letterboxd_url
+from .kodi_thumbnails import get_thumbnail_url
 
 """"
 The following variables are used to prevent unnecessary updates to the RP
@@ -304,5 +306,8 @@ def get_urls(info, media_type):
             trakt_url = get_trakt_url(tmdb_id, media_type)
         if LETTERBOXD_BUTTON_ENABLED:
             letterboxd_url = get_letterboxd_url(tmdb_id)
+        if KODI_THUMBNAIL_ENABLED:
+            image_url = get_thumbnail_url()
+
     
     return trakt_url, tmdb_url, imdb_url, letterboxd_url, image_url

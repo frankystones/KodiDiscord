@@ -10,6 +10,7 @@ Global config variables
 """
 LOG_LEVEL = 'DEBUG'  # or 'DEBUG, WARNING, ERROR, CRITICAL'                                                
 TMDB_THUMBNAIL_ENABLED = True  # Set this to False to disable the TMDB thumbnail
+KODI_THUMBNAIL_ENABLED = True  # Set this to False to disable the KODI JSONRPC thumbnail
 TIME_REMAINING_RPC_ENABLED = True  # Set this to False to disable the time remaining RPC
 
 """
