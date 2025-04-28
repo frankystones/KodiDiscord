@@ -36,10 +36,13 @@ def get_artwork(player_id):
     return data.get("result", {}).get("item", {}).get("art", {})
 
 def clean_url(kodi_url):
-    """Removes the 'image://' prefix and decodes the URL"""
+    """Removes the 'image://' prefix and decodes the URL, also removing the trailing slash"""
     if kodi_url.startswith("image://"):
         kodi_url = kodi_url[len("image://"):]  
-    return urllib.parse.unquote(kodi_url)  
+    kodi_url = urllib.parse.unquote(kodi_url)
+    if kodi_url.endswith("/"):
+        kodi_url = kodi_url[:-1]
+    return kodi_url
 
 def get_thumbnail_url():
     player_id = get_active_player()
